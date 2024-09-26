@@ -66,5 +66,8 @@ Before running the application, ensure you have the following dependencies insta
 
 ---
 
-## Project Structure
+## Contact me
+If you have any questions, feedback, or want to reach out, feel free to contact me at:
+
+Email: natnaelm552@gmail.com
 
