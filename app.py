@@ -66,7 +66,7 @@ st.markdown(
     """, unsafe_allow_html=True
 )
 
-st.title("🖼️ Generate Images with 1 click")
+st.title("🖼️ Generate Images with a click")
 
 prompt = st.text_area("Enter your creative prompt here:", placeholder="Describe the image you'd like to generate...", height=150)
 
@@ -77,7 +77,6 @@ def generate_image(prompt):
     data = {"inputs": prompt}
     while True:
         response = requests.post(API_URL, headers=headers, json=data)
-
         if response.status_code == 503:
             st.write(f"Model is loading, waiting for {response.json().get('estimated_time', 60)} seconds...")
             time.sleep(min(response.json().get("estimated_time", 60), 60))  
@@ -94,6 +93,17 @@ if st.button("Generate Image 🎨"):
             if response:
                 image = Image.open(BytesIO(response.content))
                 st.image(image, caption="Your AI-Generated Masterpiece", use_column_width=True)
+
+                buffered = BytesIO()
+                image.save(buffered, format="png")
+                img_bytes = buffered.getvalue()
+
+                st.download_button(
+                    label="Download Image",
+                    data=img_bytes,
+                    file_name="image.png",
+                    mime="image/png",
+                )
             else:
                 st.write("Please enter a prompt.")
     else:
