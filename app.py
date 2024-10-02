@@ -61,16 +61,16 @@ st.markdown(
 
     @media (max-width: 768px) {
         .block-container {
-            padding: 1rem !important; 
+            padding: 10rem 1rem; 
         }
         h1 {
-            font-size: 24px; 
+            font-size: 20px; 
         }
         textarea {
-            font-size: 14px; 
+            font-size: 8px; 
         }
         .stButton button {
-            font-size: 16px; 
+            font-size: 12px; 
             padding: 8px 16px;
         }
     }
@@ -78,17 +78,13 @@ st.markdown(
     """, unsafe_allow_html=True
 )
 
-# App title
 st.title("🖼️ Generate Images with a click")
 
-# Text area for input prompt
 prompt = st.text_area("Enter your creative prompt here:", placeholder="Describe the image you'd like to generate...", height=150)
 
-# Hugging Face API URL and headers
 API_URL = "https://api-inference.huggingface.co/models/CompVis/stable-diffusion-v1-4"
 headers = {"Authorization": f"Bearer {hugging_face_api}"}
 
-# Function to generate an image from the API
 def generate_image(prompt):
     data = {"inputs": prompt}
     while True:
@@ -102,7 +98,6 @@ def generate_image(prompt):
             st.write(f"Error {response.status_code}: {response.text}")
             return None
 
-# Button to generate the image
 if st.button("Generate Image 🎨"):
     if prompt:
         with st.spinner("Generating your image..."):
@@ -111,12 +106,11 @@ if st.button("Generate Image 🎨"):
                 image = Image.open(BytesIO(response.content))
                 st.image(image, caption="Your AI-Generated Masterpiece", use_column_width=True)
 
-                # Prepare image for download
+                
                 buffered = BytesIO()
                 image.save(buffered, format="png")
                 img_bytes = buffered.getvalue()
 
-                # Add download button for the generated image
                 st.download_button(
                     label="Download Image",
                     data=img_bytes,
