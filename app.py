@@ -16,13 +16,10 @@ st.markdown(
     <style>
     .stApp {
         background: linear-gradient(135deg, #544570 0%, #0b1636 100%);
-        padding: 20rem;
     }
+
     .block-container {
-        padding-top: 2rem;
-        padding-bottom: 2rem;
-        padding-left: 3rem;
-        padding-right: 3rem;
+        padding: 2rem 2rem 2rem 2rem; 
     }
 
     textarea {
@@ -59,33 +56,53 @@ st.markdown(
         font-family: 'Helvetica', sans-serif;
         font-weight: bold;
         font-size: 30px;
-        margin-top: 50px;
+        margin-top: 20px;
     }
 
+    @media (max-width: 768px) {
+        .block-container {
+            padding: 1rem !important; 
+        }
+        h1 {
+            font-size: 24px; 
+        }
+        textarea {
+            font-size: 14px; 
+        }
+        .stButton button {
+            font-size: 16px; 
+            padding: 8px 16px;
+        }
+    }
     </style>
     """, unsafe_allow_html=True
 )
 
+# App title
 st.title("🖼️ Generate Images with a click")
 
+# Text area for input prompt
 prompt = st.text_area("Enter your creative prompt here:", placeholder="Describe the image you'd like to generate...", height=150)
 
+# Hugging Face API URL and headers
 API_URL = "https://api-inference.huggingface.co/models/CompVis/stable-diffusion-v1-4"
 headers = {"Authorization": f"Bearer {hugging_face_api}"}
 
+# Function to generate an image from the API
 def generate_image(prompt):
     data = {"inputs": prompt}
     while True:
         response = requests.post(API_URL, headers=headers, json=data)
         if response.status_code == 503:
             st.write(f"Model is loading, waiting for {response.json().get('estimated_time', 60)} seconds...")
-            time.sleep(min(response.json().get("estimated_time", 60), 60))  
+            time.sleep(min(response.json().get("estimated_time", 60), 60))
         elif response.status_code == 200:
             return response
         else:
             st.write(f"Error {response.status_code}: {response.text}")
             return None
 
+# Button to generate the image
 if st.button("Generate Image 🎨"):
     if prompt:
         with st.spinner("Generating your image..."):
@@ -94,10 +111,12 @@ if st.button("Generate Image 🎨"):
                 image = Image.open(BytesIO(response.content))
                 st.image(image, caption="Your AI-Generated Masterpiece", use_column_width=True)
 
+                # Prepare image for download
                 buffered = BytesIO()
                 image.save(buffered, format="png")
                 img_bytes = buffered.getvalue()
 
+                # Add download button for the generated image
                 st.download_button(
                     label="Download Image",
                     data=img_bytes,
