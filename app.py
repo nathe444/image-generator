@@ -61,7 +61,7 @@ st.markdown(
 
     @media (max-width: 768px) {
         .block-container {
-            padding: 10rem 1rem; 
+            padding: 10rem 0rem; 
         }
         h1 {
             font-size: 20px; 
