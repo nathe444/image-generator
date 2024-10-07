@@ -87,8 +87,25 @@ st.title("🖼️ Generate Images with a click")
 # Text area for user input
 prompt = st.text_area("Enter your creative prompt here:", placeholder="Describe the image you'd like to generate...", height=150)
 
-# API URL for Hugging Face model
-API_URL = "https://api-inference.huggingface.co/models/CompVis/stable-diffusion-v1-4"
+# Add a select box for the user to choose an API
+api_option = st.selectbox(
+    "Select an API model for image generation:",
+    [
+        "FLUX.1-dev",        # API 1
+        "How2Draw",          # API 2
+        "Stable Diffusion v1.4"  # API 3
+    ]
+)
+
+# API URLs for different models
+API_URLS = {
+    "FLUX.1-dev": "https://api-inference.huggingface.co/models/black-forest-labs/FLUX.1-dev",
+    "How2Draw": "https://api-inference.huggingface.co/models/glif/how2draw",
+    "Stable Diffusion v1.4": "https://api-inference.huggingface.co/models/CompVis/stable-diffusion-v1-4",
+}
+
+# Set the API URL based on the user's selection
+API_URL = API_URLS[api_option]
 headers = {"Authorization": f"Bearer {hugging_face_api}"}  # Set authorization headers with the API key
 
 # Function to generate an image based on the prompt
@@ -126,7 +143,5 @@ if st.button("Generate Image 🎨"):
                     file_name="image.png",  # Default file name for download
                     mime="image/png",  # MIME type for PNG image
                 )
-            else:
-                st.write("Please enter a prompt.")  # Prompt user if response is None
     else:
         st.write("Please enter a prompt.")  # Prompt user to enter a prompt if empty
