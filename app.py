@@ -6,11 +6,9 @@ from PIL import Image
 from io import BytesIO
 import time
 
-# Load environment variables from the .env file
 load_dotenv()
-hugging_face_api = os.getenv('hugging_face_api')  # Get the Hugging Face API key
+hugging_face_api = os.getenv('hugging_face_api')  
 
-# Configure the Streamlit page
 st.set_page_config(page_title="🖼️ Image Generator", page_icon="🎨", layout="centered")
 
 # Custom CSS styling for the app
@@ -81,10 +79,8 @@ st.markdown(
     """, unsafe_allow_html=True
 )
 
-# Main title of the app
 st.title("🖼️ Generate Images with a click")
 
-# Text area for user input
 prompt = st.text_area("Enter your creative prompt here:", placeholder="Describe the image you'd like to generate...", height=150)
 
 # Add a select box for the user to choose an API
@@ -106,13 +102,13 @@ API_URLS = {
 
 # Set the API URL based on the user's selection
 API_URL = API_URLS[api_option]
-headers = {"Authorization": f"Bearer {hugging_face_api}"}  # Set authorization headers with the API key
+headers = {"Authorization": f"Bearer {hugging_face_api}"}  
 
 # Function to generate an image based on the prompt
 def generate_image(prompt):
-    data = {"inputs": prompt}  # Prepare data for the API request
+    data = {"inputs": prompt}  
     while True:
-        response = requests.post(API_URL, headers=headers, json=data)  # Send POST request to the API
+        response = requests.post(API_URL, headers=headers, json=data) 
         if response.status_code == 503:  # If the model is loading
             st.write(f"Model is loading, waiting for {response.json().get('estimated_time', 60)} seconds...")  # Notify user about loading time
             time.sleep(min(response.json().get("estimated_time", 60), 60))  # Wait for the specified time
@@ -124,9 +120,9 @@ def generate_image(prompt):
 
 # Button for generating the image
 if st.button("Generate Image 🎨"):
-    if prompt:  # Check if prompt is provided
-        with st.spinner("Generating your image..."):  # Show loading spinner while generating
-            response = generate_image(prompt)  # Call the image generation function
+    if prompt:  
+        with st.spinner("Generating your image..."):  
+            response = generate_image(prompt)  
             if response:
                 image = Image.open(BytesIO(response.content))  # Open the image from response
                 st.image(image, caption="Your AI-Generated Masterpiece", use_column_width=True)  # Display the generated image
@@ -136,7 +132,7 @@ if st.button("Generate Image 🎨"):
                 image.save(buffered, format="png")  # Save the image to a BytesIO buffer
                 img_bytes = buffered.getvalue()  # Get byte value of the image
 
-                # Button for downloading the generated image
+                
                 st.download_button(
                     label="Download Image",
                     data=img_bytes,  # Image data
