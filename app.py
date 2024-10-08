@@ -11,7 +11,6 @@ hugging_face_api = os.getenv('hugging_face_api')
 
 st.set_page_config(page_title="🖼️ Image Generator", page_icon="🎨", layout="centered")
 
-# Custom CSS styling for the app
 st.markdown(
     """
     <style>
@@ -102,13 +101,22 @@ API_URLS = {
 
 # Set the API URL based on the user's selection
 API_URL = API_URLS[api_option]
-headers = {"Authorization": f"Bearer {hugging_face_api}"}  
+headers = {"Authorization": f"Bearer {hugging_face_api}"} 
+
+r = requests.post(
+    "https://api.deepai.org/api/text2img",
+    data={
+        'text': 'YOUR_TEXT_HERE',
+    },
+    headers={'api-key': '58a5a34c-339b-4e49-8e24-167749263f97'}
+)
+print(r.json())
 
 # Function to generate an image based on the prompt
 def generate_image(prompt):
-    data = {"inputs": prompt}  
+    data = {"inputs": prompt}  # Prepare data for the API request
     while True:
-        response = requests.post(API_URL, headers=headers, json=data) 
+        response = requests.post(API_URL, headers=headers, json=data)
         if response.status_code == 503:  # If the model is loading
             st.write(f"Model is loading, waiting for {response.json().get('estimated_time', 60)} seconds...")  # Notify user about loading time
             time.sleep(min(response.json().get("estimated_time", 60), 60))  # Wait for the specified time
@@ -118,7 +126,6 @@ def generate_image(prompt):
             st.write(f"Error {response.status_code}: {response.text}")  # Display error message
             return None  # Return None if there's an error
 
-# Button for generating the image
 if st.button("Generate Image 🎨"):
     if prompt:  
         with st.spinner("Generating your image..."):  
@@ -129,10 +136,9 @@ if st.button("Generate Image 🎨"):
 
                 # Prepare image for download
                 buffered = BytesIO()
-                image.save(buffered, format="png")  # Save the image to a BytesIO buffer
+                image.save(buffered, format="PNG")  # Save the image to a BytesIO buffer
                 img_bytes = buffered.getvalue()  # Get byte value of the image
 
-                
                 st.download_button(
                     label="Download Image",
                     data=img_bytes,  # Image data
@@ -140,4 +146,4 @@ if st.button("Generate Image 🎨"):
                     mime="image/png",  # MIME type for PNG image
                 )
     else:
-        st.write("Please enter a prompt.")  # Prompt user to enter a prompt if empty
+        st.write("Please enter a prompt.")  
